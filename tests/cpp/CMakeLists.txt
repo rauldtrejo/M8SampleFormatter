@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
 
-# Find Google Test
+# Find required packages
+find_package(Threads QUIET)
 find_package(GTest REQUIRED)
 find_package(PkgConfig REQUIRED)
 find_library(SNDFILE_LIBRARY NAMES sndfile libsndfile)
@@ -58,6 +59,9 @@ set(PROJECT_SOURCES
 add_executable(m8_formatter_tests ${TEST_SOURCES} ${PROJECT_SOURCES})
 
 # Link libraries
+if(Threads_FOUND)
+    target_link_libraries(m8_formatter_tests Threads::Threads)
+endif()
 target_link_libraries(m8_formatter_tests 
     GTest::gtest
     GTest::gtest_main

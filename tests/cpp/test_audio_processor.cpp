@@ -1,7 +1,9 @@
 #include <gtest/gtest.h>
-#include "audio/AudioProcessor.h"
+#include "AudioProcessor.h"
 #include <filesystem>
 #include <vector>
+#include <fstream>
+#include <cmath>
 
 class AudioProcessorTest : public ::testing::Test {
 protected:

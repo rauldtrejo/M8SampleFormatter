@@ -61,6 +61,13 @@ fi
 # Check for Google Test
 if ! pkg-config --exists gtest; then
     print_warning "Google Test not found via pkg-config, will try to find it manually"
+    # Try to find Google Test in common locations
+    if [ -d "/opt/homebrew/include/gtest" ] || [ -d "/usr/local/include/gtest" ]; then
+        print_status "Found Google Test in system directories"
+    else
+        print_error "Google Test not found. Please install it with: brew install googletest"
+        exit 1
+    fi
 fi
 
 print_success "All dependencies found"

@@ -1,7 +1,8 @@
 #include <gtest/gtest.h>
-#include "filesystem/FileScanner.h"
+#include "FileScanner.h"
 #include <filesystem>
 #include <vector>
+#include <fstream>
 
 class FileScannerTest : public ::testing::Test {
 protected:

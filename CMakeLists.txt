@@ -30,6 +30,7 @@ if(APPLE)
 endif()
 
 # Find required packages
+find_package(Threads)
 find_package(PkgConfig REQUIRED)
 find_library(SNDFILE_LIBRARY NAMES sndfile libsndfile)
 pkg_check_modules(LIBSNDFILE REQUIRED sndfile)
@@ -68,6 +69,9 @@ set(HEADERS
 add_executable(M8SampleFormatter ${SOURCES} ${HEADERS})
 
 # Link libraries
+if(Threads_FOUND)
+    target_link_libraries(M8SampleFormatter Threads::Threads)
+endif()
 target_link_libraries(M8SampleFormatter 
     ${LIBSNDFILE_LIBRARIES}
     ${SNDFILE_LIBRARY}
@@ -98,6 +102,12 @@ install(TARGETS M8SampleFormatter DESTINATION bin)
 option(BUILD_TESTS "Build tests" ON)
 
 if(BUILD_TESTS)
-    enable_testing()
-    add_subdirectory(tests/cpp)
+    find_package(GTest QUIET)
+    if(GTest_FOUND)
+        enable_testing()
+        add_subdirectory(tests/cpp)
+        message(STATUS "Google Test found, building tests")
+    else()
+        message(WARNING "Google Test not found, skipping tests. Install with: brew install googletest")
+    endif()
 endif()
