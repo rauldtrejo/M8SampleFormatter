@@ -1,0 +1,39 @@
+# Build artifacts
+build/
+dist/
+
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+*.tmp
+*.temp
+temp.dmg
+dmg_build/
+
+# App bundles (generated)
+M8SampleFormatter.app/
+
+# Swift build artifacts
+.build/
+*.dmg
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+*.cmake
