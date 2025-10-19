@@ -1,0 +1,9 @@
+# Global code owners
+* @rauldtrejo
+
+# Specific file ownership
+/.github/ @rauldtrejo
+/scripts/ @rauldtrejo
+/src/ @rauldtrejo
+CMakeLists.txt @rauldtrejo
+Package.swift @rauldtrejo
