@@ -17,6 +17,11 @@ let package = Package(
             name: "M8FormatterGUI",
             dependencies: [],
             path: "src/swift"
+        ),
+        .testTarget(
+            name: "M8FormatterGUITests",
+            dependencies: ["M8FormatterGUI"],
+            path: "tests/swift"
         )
     ]
 )

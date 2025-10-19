@@ -8,6 +8,23 @@
 
 M8 Sample Formatter converts and organizes audio sample packs for the Dirtywave M8 tracker by shortening filenames to camelCase and converting all audio formats to 16-bit WAV.
 
+## 🙏 Acknowledgments
+
+This project was inspired by and builds upon the excellent work of the [M8 Sample Organizer](https://github.com/birds-inc/m8-sample-organizer) by [birds-inc](https://github.com/birds-inc). 
+
+We extend our gratitude to the original developers for:
+- **Folder flattening algorithm** - The core logic for reducing nested folder structures
+- **Strike word removal** - The intelligent approach to removing redundant words
+- **M8 optimization concepts** - Understanding the specific needs of M8 tracker users
+
+Our implementation adds:
+- **Native macOS GUI** - SwiftUI interface for better user experience
+- **Apple Silicon optimization** - High-performance processing using Accelerate framework
+- **Multi-threading** - Parallel processing for faster conversion
+- **Real-time progress tracking** - Live updates during processing
+
+Thank you to the M8 community and the original M8 Sample Organizer team for the inspiration and foundation! 🎵
+
 ---
 
 ## ✨ Features
@@ -289,46 +306,7 @@ lldb ./M8SampleFormatter
 
 ## 🤝 Contributing
 
-Contributions are welcome! Here's how you can help:
-
-### Reporting Issues
-
-1. Check [existing issues](https://github.com/rauldtrejo/M8SampleFormatter/issues)
-2. Create a new issue with:
-   - Clear description
-   - Steps to reproduce
-   - Expected vs actual behavior
-   - macOS version and hardware
-   - Sample files (if applicable)
-
-### Submitting Pull Requests
-
-1. **Fork** the repository
-2. **Create** a feature branch: `git checkout -b feature/amazing-feature`
-3. **Make** your changes
-4. **Test** thoroughly
-5. **Commit** with clear messages: `git commit -m 'Add amazing feature'`
-6. **Push** to your fork: `git push origin feature/amazing-feature`
-7. **Open** a Pull Request
-
-### Development Guidelines
-
-- **Code Style**: Follow existing patterns
-- **Comments**: Document complex logic
-- **Testing**: Test on Apple Silicon and Intel Macs
-- **Performance**: Profile before and after changes
-- **UI**: Ensure responsiveness and native feel
-
-### Areas for Contribution
-
-- [ ] Intel Mac testing and optimization
-- [ ] Additional audio format support
-- [ ] Batch processing improvements
-- [ ] UI/UX enhancements
-- [ ] Documentation improvements
-- [ ] Unit tests
-- [ ] CI/CD pipeline
-- [ ] Windows/Linux ports (via CLI)
+Contributions are welcome! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details on how to contribute to this project.
 
 ---
 
@@ -359,42 +337,6 @@ Report issues at: https://github.com/rauldtrejo/M8SampleFormatter/issues
 
 ---
 
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-```
-MIT License
-
-Copyright (c) 2024 M8 Sample Formatter Contributors
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
-
----
-
-## 🙏 Acknowledgments
-
-- **Dirtywave** - For creating the amazing M8 tracker
-- **libsndfile** - For comprehensive audio format support
-- **Apple** - For the Accelerate framework
-- **Open Source Community** - For inspiration and support
 
 ---
 

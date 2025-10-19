@@ -57,10 +57,20 @@ echo "================================="
 mkdir -p build
 cd build
 print_status "Configuring CMake..."
-cmake .. -DCMAKE_BUILD_TYPE=Release
+cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON
 print_status "Building C++ backend..."
 make -j$(sysctl -n hw.ncpu)
 print_success "C++ backend built successfully"
+
+# Run C++ tests
+print_status "Running C++ tests..."
+if [ -f "tests/cpp/m8_formatter_tests" ]; then
+    ./tests/cpp/m8_formatter_tests
+    print_success "C++ tests passed"
+else
+    print_warning "C++ tests not found, skipping"
+fi
+
 cd ..
 
 # Step 2: Build SwiftUI GUI
@@ -69,6 +79,11 @@ echo "==============================="
 print_status "Building SwiftUI GUI..."
 swift build -c release
 print_success "SwiftUI GUI built successfully"
+
+# Run Swift tests
+print_status "Running Swift tests..."
+swift test --package-path . -c release
+print_success "Swift tests passed"
 
 # Step 3: Create App Bundle
 print_step "Step 3: Creating macOS App Bundle"

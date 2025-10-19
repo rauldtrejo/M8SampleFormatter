@@ -93,3 +93,11 @@ set_target_properties(M8SampleFormatter PROPERTIES
 
 # Install target
 install(TARGETS M8SampleFormatter DESTINATION bin)
+
+# Testing
+option(BUILD_TESTS "Build tests" ON)
+
+if(BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(tests/cpp)
+endif()

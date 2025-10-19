@@ -253,24 +253,9 @@ xcode-select --install
 sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer
 ```
 
-## 🎯 Priority Areas for Contribution
+## 🎯 Contributing
 
-### High Priority
-- Intel Mac testing and fixes
-- Unit tests for core functionality
-- Performance optimizations
-- Bug fixes
-
-### Medium Priority
-- Additional audio format support
-- UI improvements
-- Error handling enhancements
-- Documentation improvements
-
-### Low Priority
-- Code refactoring
-- Style improvements
-- Minor feature additions
+We welcome contributions that help improve the project! Whether it's bug fixes, new features, documentation improvements, or any other enhancements that benefit the M8 community, we'd love to see your contributions.
 
 ## 📞 Getting Help
 
