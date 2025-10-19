@@ -28,23 +28,16 @@ jobs:
         chmod +x scripts/build_complete.sh
         ./scripts/build_complete.sh
         
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        draft: false
-        prerelease: false
-        
     - name: Upload DMG
-      uses: actions/upload-release-asset@v1
+      uses: actions/upload-artifact@v4
+      with:
+        name: M8SampleFormatter.dmg
+        path: ./dist/M8SampleFormatter.dmg
+        
+    - name: Create Release
+      uses: softprops/action-gh-release@v2
+      with:
+        files: ./dist/M8SampleFormatter.dmg
+        generate_release_notes: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./dist/M8SampleFormatter.dmg
-        asset_name: M8SampleFormatter.dmg
-        asset_content_type: application/octet-stream
