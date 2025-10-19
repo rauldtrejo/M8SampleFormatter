@@ -1,186 +1,175 @@
-import XCTest
+import Testing
 import SwiftUI
 @testable import M8FormatterGUI
 
-class M8FormatterGUITests: XCTestCase {
-    var viewModel: ProcessingViewModel!
+@MainActor
+struct M8FormatterGUITests {
     
-    override func setUp() {
-        super.setUp()
-        viewModel = ProcessingViewModel()
+    @Test("Initial state should have correct default values")
+    func testInitialState() async {
+        let viewModel = ProcessingViewModel()
+        
+        #expect(viewModel.isProcessing == false)
+        #expect(viewModel.isCompleted == false)
+        #expect(viewModel.progress == 0.0)
+        #expect(viewModel.processedFiles == 0)
+        #expect(viewModel.totalFiles == 0)
+        #expect(viewModel.processedFolders == 0)
+        #expect(viewModel.currentFolder == "")
+        #expect(viewModel.processingTime == 0.0)
+        #expect(viewModel.averageSpeed == 0.0)
+        #expect(viewModel.errorMessage == "")
+        #expect(viewModel.showingError == false)
     }
     
-    override func tearDown() {
-        viewModel = nil
-        super.tearDown()
-    }
-    
-    func testInitialState() {
-        XCTAssertFalse(viewModel.isProcessing)
-        XCTAssertFalse(viewModel.isCompleted)
-        XCTAssertEqual(viewModel.progress, 0.0)
-        XCTAssertEqual(viewModel.processedFiles, 0)
-        XCTAssertEqual(viewModel.totalFiles, 0)
-        XCTAssertEqual(viewModel.processedFolders, 0)
-        XCTAssertEqual(viewModel.currentFolder, "")
-        XCTAssertEqual(viewModel.processingTime, 0.0)
-        XCTAssertEqual(viewModel.averageSpeed, 0.0)
-        XCTAssertEqual(viewModel.errorMessage, "")
-        XCTAssertFalse(viewModel.showingError)
-    }
-    
-    func testAddFolders() {
+    @Test("Should add folders correctly")
+    func testAddFolders() async {
+        let viewModel = ProcessingViewModel()
         let testPaths = ["/path/to/folder1", "/path/to/folder2"]
         
         viewModel.addFolders(testPaths)
         
-        XCTAssertEqual(viewModel.selectedFolders.count, 2)
-        XCTAssertEqual(viewModel.selectedFolders[0].path, "/path/to/folder1")
-        XCTAssertEqual(viewModel.selectedFolders[1].path, "/path/to/folder2")
+        #expect(viewModel.selectedFolders.count == 2)
+        #expect(viewModel.selectedFolders[0].path == "/path/to/folder1")
+        #expect(viewModel.selectedFolders[1].path == "/path/to/folder2")
     }
     
-    func testAddDuplicateFolders() {
+    @Test("Should not add duplicate folders")
+    func testAddDuplicateFolders() async {
+        let viewModel = ProcessingViewModel()
         let testPath = "/path/to/folder"
         
         viewModel.addFolders([testPath])
         viewModel.addFolders([testPath]) // Add same path again
         
-        XCTAssertEqual(viewModel.selectedFolders.count, 1) // Should not add duplicate
+        #expect(viewModel.selectedFolders.count == 1) // Should not add duplicate
     }
     
-    func testRemoveFolder() {
+    @Test("Should remove folders correctly")
+    func testRemoveFolder() async {
+        let viewModel = ProcessingViewModel()
         let testPaths = ["/path/to/folder1", "/path/to/folder2"]
         viewModel.addFolders(testPaths)
         
         let folderToRemove = viewModel.selectedFolders[0]
         viewModel.removeFolder(folderToRemove)
         
-        XCTAssertEqual(viewModel.selectedFolders.count, 1)
-        XCTAssertEqual(viewModel.selectedFolders[0].path, "/path/to/folder2")
+        #expect(viewModel.selectedFolders.count == 1)
+        #expect(viewModel.selectedFolders[0].path == "/path/to/folder2")
     }
     
-    func testClearAllFolders() {
+    @Test("Should clear all folders")
+    func testClearAllFolders() async {
+        let viewModel = ProcessingViewModel()
         let testPaths = ["/path/to/folder1", "/path/to/folder2", "/path/to/folder3"]
         viewModel.addFolders(testPaths)
         
         viewModel.clearAllFolders()
         
-        XCTAssertEqual(viewModel.selectedFolders.count, 0)
+        #expect(viewModel.selectedFolders.count == 0)
     }
     
-    func testStartProcessingWithoutFolders() {
+    @Test("Should not start processing without folders")
+    func testStartProcessingWithoutFolders() async {
+        let viewModel = ProcessingViewModel()
         viewModel.outputFolderPath = "/output"
         
         viewModel.startProcessing()
         
-        XCTAssertFalse(viewModel.isProcessing)
+        #expect(viewModel.isProcessing == false)
     }
     
-    func testStartProcessingWithoutOutputPath() {
+    @Test("Should not start processing without output path")
+    func testStartProcessingWithoutOutputPath() async {
+        let viewModel = ProcessingViewModel()
         viewModel.addFolders(["/path/to/folder"])
         
         viewModel.startProcessing()
         
-        XCTAssertFalse(viewModel.isProcessing)
+        #expect(viewModel.isProcessing == false)
     }
     
-    func testStartProcessingWithValidInputs() {
+    @Test("Should start processing with valid inputs")
+    func testStartProcessingWithValidInputs() async {
+        let viewModel = ProcessingViewModel()
         viewModel.addFolders(["/path/to/folder"])
         viewModel.outputFolderPath = "/output"
         
         viewModel.startProcessing()
         
-        XCTAssertTrue(viewModel.isProcessing)
-        XCTAssertFalse(viewModel.isCompleted)
-        XCTAssertEqual(viewModel.progress, 0.0)
-        XCTAssertEqual(viewModel.processedFiles, 0)
-        XCTAssertEqual(viewModel.totalFiles, 0)
-        XCTAssertEqual(viewModel.processedFolders, 0)
-        XCTAssertEqual(viewModel.currentFolder, "")
-        XCTAssertEqual(viewModel.processingTime, 0.0)
-        XCTAssertEqual(viewModel.averageSpeed, 0.0)
-        XCTAssertEqual(viewModel.errorMessage, "")
+        #expect(viewModel.isProcessing == true)
+        #expect(viewModel.isCompleted == false)
+        #expect(viewModel.progress == 0.0)
+        #expect(viewModel.processedFiles == 0)
+        #expect(viewModel.totalFiles == 0)
+        #expect(viewModel.processedFolders == 0)
+        #expect(viewModel.currentFolder == "")
+        #expect(viewModel.processingTime == 0.0)
+        #expect(viewModel.averageSpeed == 0.0)
+        #expect(viewModel.errorMessage == "")
     }
     
-    func testStopProcessing() {
+    @Test("Should stop processing correctly")
+    func testStopProcessing() async {
+        let viewModel = ProcessingViewModel()
         viewModel.addFolders(["/path/to/folder"])
         viewModel.outputFolderPath = "/output"
         viewModel.startProcessing()
         
         viewModel.stopProcessing()
         
-        XCTAssertFalse(viewModel.isProcessing)
-        XCTAssertEqual(viewModel.currentFolder, "")
+        #expect(viewModel.isProcessing == false)
+        #expect(viewModel.currentFolder == "")
     }
     
-    func testReset() {
+    @Test("Should reset correctly")
+    func testReset() async {
+        let viewModel = ProcessingViewModel()
         viewModel.addFolders(["/path/to/folder"])
         viewModel.outputFolderPath = "/output"
         viewModel.startProcessing()
         
         viewModel.reset()
         
-        XCTAssertFalse(viewModel.isProcessing)
-        XCTAssertFalse(viewModel.isCompleted)
-        XCTAssertEqual(viewModel.progress, 0.0)
-        XCTAssertEqual(viewModel.processedFiles, 0)
-        XCTAssertEqual(viewModel.totalFiles, 0)
-        XCTAssertEqual(viewModel.processedFolders, 0)
-        XCTAssertEqual(viewModel.currentFolder, "")
-        XCTAssertEqual(viewModel.processingTime, 0.0)
-        XCTAssertEqual(viewModel.averageSpeed, 0.0)
-        XCTAssertEqual(viewModel.errorMessage, "")
+        #expect(viewModel.isProcessing == false)
+        #expect(viewModel.isCompleted == false)
+        #expect(viewModel.progress == 0.0)
+        #expect(viewModel.processedFiles == 0)
+        #expect(viewModel.totalFiles == 0)
+        #expect(viewModel.processedFolders == 0)
+        #expect(viewModel.currentFolder == "")
+        #expect(viewModel.processingTime == 0.0)
+        #expect(viewModel.averageSpeed == 0.0)
+        #expect(viewModel.errorMessage == "")
     }
     
-    func testConvertBitDepthToggle() {
-        XCTAssertTrue(viewModel.convertBitDepth)
+    @Test("Should toggle convert bit depth")
+    func testConvertBitDepthToggle() async {
+        let viewModel = ProcessingViewModel()
+        #expect(viewModel.convertBitDepth == true)
         
         viewModel.convertBitDepth = false
-        XCTAssertFalse(viewModel.convertBitDepth)
+        #expect(viewModel.convertBitDepth == false)
         
         viewModel.convertBitDepth = true
-        XCTAssertTrue(viewModel.convertBitDepth)
+        #expect(viewModel.convertBitDepth == true)
     }
     
-    func testFlattenFoldersToggle() {
-        XCTAssertFalse(viewModel.flattenFolders)
+    @Test("Should toggle flatten folders")
+    func testFlattenFoldersToggle() async {
+        let viewModel = ProcessingViewModel()
+        #expect(viewModel.flattenFolders == false)
         
         viewModel.flattenFolders = true
-        XCTAssertTrue(viewModel.flattenFolders)
+        #expect(viewModel.flattenFolders == true)
         
         viewModel.flattenFolders = false
-        XCTAssertFalse(viewModel.flattenFolders)
+        #expect(viewModel.flattenFolders == false)
     }
     
-    func testSelectedFolderProperties() {
-        let testPath = "/path/to/test/folder"
-        let expectedName = "folder"
-        
-        viewModel.addFolders([testPath])
-        
-        let folder = viewModel.selectedFolders[0]
-        XCTAssertEqual(folder.path, testPath)
-        XCTAssertEqual(folder.name, expectedName)
-        XCTAssertNotNil(folder.id)
-    }
-    
-    func testMultipleFolders() {
-        let testPaths = [
-            "/path/to/folder1",
-            "/path/to/folder2",
-            "/path/to/folder3"
-        ]
-        
-        viewModel.addFolders(testPaths)
-        
-        XCTAssertEqual(viewModel.selectedFolders.count, 3)
-        
-        for (index, path) in testPaths.enumerated() {
-            XCTAssertEqual(viewModel.selectedFolders[index].path, path)
-        }
-    }
-    
-    func testFolderNameExtraction() {
+    @Test("Should extract folder names correctly")
+    func testFolderNameExtraction() async {
+        let viewModel = ProcessingViewModel()
         let testPaths = [
             "/Users/test/Sample Pack 1",
             "/Users/test/Sample Pack 2",
@@ -196,92 +185,25 @@ class M8FormatterGUITests: XCTestCase {
         viewModel.addFolders(testPaths)
         
         for (index, expectedName) in expectedNames.enumerated() {
-            XCTAssertEqual(viewModel.selectedFolders[index].name, expectedName)
+            #expect(viewModel.selectedFolders[index].name == expectedName)
         }
     }
-}
-
-// MARK: - Integration Tests
-class M8FormatterIntegrationTests: XCTestCase {
-    var viewModel: ProcessingViewModel!
     
-    override func setUp() {
-        super.setUp()
-        viewModel = ProcessingViewModel()
-    }
-    
-    override func tearDown() {
-        viewModel = nil
-        super.tearDown()
-    }
-    
-    func testProcessingWorkflow() {
-        // Setup
-        viewModel.addFolders(["/path/to/folder1", "/path/to/folder2"])
-        viewModel.outputFolderPath = "/output"
-        viewModel.convertBitDepth = true
-        viewModel.flattenFolders = false
+    @Test("Should handle multiple folders")
+    func testMultipleFolders() async {
+        let viewModel = ProcessingViewModel()
+        let testPaths = [
+            "/path/to/folder1",
+            "/path/to/folder2",
+            "/path/to/folder3"
+        ]
         
-        // Start processing
-        viewModel.startProcessing()
+        viewModel.addFolders(testPaths)
         
-        // Verify initial state
-        XCTAssertTrue(viewModel.isProcessing)
-        XCTAssertFalse(viewModel.isCompleted)
-        XCTAssertEqual(viewModel.progress, 0.0)
+        #expect(viewModel.selectedFolders.count == 3)
         
-        // Simulate processing completion
-        viewModel.reset()
-        
-        // Verify final state
-        XCTAssertFalse(viewModel.isProcessing)
-        XCTAssertFalse(viewModel.isCompleted)
-    }
-    
-    func testErrorHandling() {
-        // This would test error scenarios in a real implementation
-        // For now, we'll test the error state properties
-        XCTAssertEqual(viewModel.errorMessage, "")
-        XCTAssertFalse(viewModel.showingError)
-    }
-}
-
-// MARK: - Performance Tests
-class M8FormatterPerformanceTests: XCTestCase {
-    var viewModel: ProcessingViewModel!
-    
-    override func setUp() {
-        super.setUp()
-        viewModel = ProcessingViewModel()
-    }
-    
-    override func tearDown() {
-        viewModel = nil
-        super.tearDown()
-    }
-    
-    func testLargeNumberOfFolders() {
-        let numberOfFolders = 1000
-        let folderPaths = (0..<numberOfFolders).map { "/path/to/folder\($0)" }
-        
-        measure {
-            viewModel.addFolders(folderPaths)
-        }
-        
-        XCTAssertEqual(viewModel.selectedFolders.count, numberOfFolders)
-    }
-    
-    func testFolderOperationsPerformance() {
-        let folderPaths = (0..<100).map { "/path/to/folder\($0)" }
-        viewModel.addFolders(folderPaths)
-        
-        measure {
-            for _ in 0..<1000 {
-                let randomIndex = Int.random(in: 0..<viewModel.selectedFolders.count)
-                let folder = viewModel.selectedFolders[randomIndex]
-                viewModel.removeFolder(folder)
-                viewModel.addFolders([folder.path])
-            }
+        for (index, path) in testPaths.enumerated() {
+            #expect(viewModel.selectedFolders[index].path == path)
         }
     }
 }

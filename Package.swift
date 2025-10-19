@@ -24,7 +24,10 @@ let package = Package(
         .testTarget(
             name: "M8FormatterGUITests",
             dependencies: ["M8FormatterGUI"],
-            path: "tests/swift"
+            path: "tests/swift",
+            swiftSettings: [
+                .enableExperimentalFeature("StrictConcurrency")
+            ]
         )
     ]
 )
