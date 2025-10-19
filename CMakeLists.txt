@@ -23,13 +23,14 @@ if(APPLE)
                    ${COREAUDIO_FRAMEWORK} ${FOUNDATION_FRAMEWORK} ${COREFOUNDATION_FRAMEWORK})
     
     # Enable Apple Silicon specific optimizations
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=arm64 -mtune=native -mcpu=apple-m1")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=arm64 -mtune=native -mcpu=apple-m1")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mtune=native")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mtune=native")
     
     message(STATUS "Apple Silicon optimizations enabled")
 endif()
 
 # Find required packages
+find_package(Threads)
 find_package(PkgConfig REQUIRED)
 find_library(SNDFILE_LIBRARY NAMES sndfile libsndfile)
 pkg_check_modules(LIBSNDFILE REQUIRED sndfile)
@@ -68,6 +69,9 @@ set(HEADERS
 add_executable(M8SampleFormatter ${SOURCES} ${HEADERS})
 
 # Link libraries
+if(Threads_FOUND)
+    target_link_libraries(M8SampleFormatter Threads::Threads)
+endif()
 target_link_libraries(M8SampleFormatter 
     ${LIBSNDFILE_LIBRARIES}
     ${SNDFILE_LIBRARY}
@@ -93,3 +97,24 @@ set_target_properties(M8SampleFormatter PROPERTIES
 
 # Install target
 install(TARGETS M8SampleFormatter DESTINATION bin)
+
+# Testing - Disabled by default, only enabled in CI
+option(BUILD_TESTS "Build tests" OFF)
+
+if(BUILD_TESTS)
+    find_package(Threads QUIET)
+    find_package(GTest QUIET)
+    
+    # On macOS, pthread is always available, so we can proceed if GTest is found
+    if(GTest_FOUND)
+        if(Threads_FOUND)
+            message(STATUS "Google Test and Threads found, building tests")
+        else()
+            message(STATUS "Google Test found, Threads will be handled by system (macOS)")
+        endif()
+        enable_testing()
+        add_subdirectory(tests/cpp)
+    else()
+        message(WARNING "Google Test not found, skipping tests. Install with: brew install googletest")
+    endif()
+endif()

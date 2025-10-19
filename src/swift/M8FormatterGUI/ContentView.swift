@@ -45,27 +45,59 @@ struct ContentView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // Header Section
-            VStack(spacing: 16) {
+            // Header Section with Dirtywave branding
+            VStack(spacing: 0) {
+                // Dirtywave header image
                 HStack {
-                    Image(systemName: "waveform.circle.fill")
-                        .font(.system(size: 40))
-                        .foregroundColor(.blue)
-                    
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("M8 Sample Formatter")
-                            .font(.title)
-                            .fontWeight(.bold)
-                        
-                        Text("Shorten filenames and convert to 16-bit WAV")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
+                    // Try multiple approaches to load the image
+                    if let bundlePath = Bundle.main.path(forResource: "dirtywaveHeader", ofType: "png"),
+                       let nsImage = NSImage(contentsOfFile: bundlePath) {
+                        Image(nsImage: nsImage)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(maxHeight: 15)
+                            .padding(.leading, 24)
+                    } else if let nsImage = NSImage(named: "dirtywaveHeader") {
+                        Image(nsImage: nsImage)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(maxHeight: 15)
+                            .padding(.leading, 24)
+                    } else {
+                        // Fallback - show a placeholder with debug info
+                        Rectangle()
+                            .fill(Color.white.opacity(0.3))
+                            .frame(width: 200, height: 60)
+                            .overlay(
+                                VStack {
+                                    Text("Dirtywave")
+                                        .foregroundColor(.white)
+                                        .font(.title2)
+                                        .fontWeight(.bold)
+                                    Text("Image not found")
+                                        .foregroundColor(.white.opacity(0.7))
+                                        .font(.caption)
+                                }
+                            )
+                            .padding(.leading, 24)
                     }
                     
                     Spacer()
+                    
+                    VStack(alignment: .trailing, spacing: 4) {
+                        Text("M8 Sample Formatter")
+                            .font(.title)
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+                        
+                        Text("Shorten filenames and convert to 16-bit WAV")
+                            .font(.subheadline)
+                            .foregroundColor(.white.opacity(0.8))
+                    }
+                    .padding(.trailing, 24)
                 }
-                .padding(.horizontal, 24)
-                .padding(.top, 20)
+                .padding(.vertical, 20)
+                .background(Color(red: 13/255, green: 13/255, blue: 13/255))
             }
             
             Divider()

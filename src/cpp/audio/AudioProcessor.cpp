@@ -164,7 +164,8 @@ bool AudioProcessor::isSupportedFormat(const std::string& filepath) {
     std::string ext = filepath.substr(filepath.find_last_of('.'));
     std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
     
-    return (ext == ".wav" || ext == ".aif" || ext == ".aiff");
+    return (ext == ".wav" || ext == ".aif" || ext == ".aiff" || 
+            ext == ".flac" || ext == ".ogg" || ext == ".mp3");
 }
 
 float AudioProcessor::calculateRMS(const std::vector<float>& audioData) {

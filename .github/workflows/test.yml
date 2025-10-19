@@ -1,0 +1,252 @@
+name: Test Suite
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: macos-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install dependencies
+      run: |
+        # Update brew first
+        brew update
+        
+        # Install all required dependencies
+        brew install cmake pkg-config libsndfile googletest swift
+        
+        # Verify installations
+        cmake --version
+        pkg-config --version
+        swift --version
+        
+        # Set up environment for proper linking
+        export LDFLAGS="-L/opt/homebrew/lib -lpthread"
+        export CPPFLAGS="-I/opt/homebrew/include"
+        export PKG_CONFIG_PATH="/opt/homebrew/lib/pkgconfig:$PKG_CONFIG_PATH"
+        
+        # Ensure pthread is available
+        echo "Checking pthread availability..."
+        if gcc -lpthread -o /tmp/pthread_test -x c - <<< 'int main(){return 0;}' 2>/dev/null; then
+          echo "pthread: OK"
+          rm -f /tmp/pthread_test
+        else
+          echo "pthread: FAILED"
+          exit 1
+        fi
+    
+    - name: Verify dependencies
+      run: |
+        echo "Checking dependencies..."
+        
+        # Check Google Test
+        if pkg-config --exists gtest; then
+          echo "Google Test: OK"
+          pkg-config --modversion gtest
+        else
+          echo "Google Test: MISSING - FAILING BUILD"
+          exit 1
+        fi
+        
+        # Check libsndfile
+        if pkg-config --exists sndfile; then
+          echo "libsndfile: OK"
+          pkg-config --modversion sndfile
+        else
+          echo "libsndfile: MISSING - FAILING BUILD"
+          exit 1
+        fi
+        
+        # Check pthread
+        if gcc -lpthread -o /tmp/thread_test -x c - <<< 'int main(){return 0;}' 2>/dev/null; then
+          echo "pthread: OK"
+          rm -f /tmp/thread_test
+        else
+          echo "pthread: MISSING - FAILING BUILD"
+          exit 1
+        fi
+        
+        echo "All dependencies verified successfully!"
+    
+    - name: Create test fixtures
+      run: |
+        mkdir -p tests/fixtures/input
+        mkdir -p tests/fixtures/output
+        # Create minimal audio files for testing
+        chmod +x tests/fixtures/create_minimal_audio_files.sh
+        ./tests/fixtures/create_minimal_audio_files.sh
+    
+    - name: Configure and build C++ application
+      run: |
+        mkdir -p build
+        cd build
+        # Set environment variables for CMake
+        export LDFLAGS="-L/opt/homebrew/lib -lpthread"
+        export CPPFLAGS="-I/opt/homebrew/include"
+        export PKG_CONFIG_PATH="/opt/homebrew/lib/pkgconfig:$PKG_CONFIG_PATH"
+        
+        echo "Configuring CMake for application build..."
+        cmake .. -DBUILD_TESTS=OFF -DCMAKE_BUILD_TYPE=Debug
+        
+        echo "Building application..."
+        make -j$(sysctl -n hw.ncpu)
+        
+        # Verify main application was built
+        if [ ! -f "M8SampleFormatter" ]; then
+          echo "ERROR: Main application was not built!"
+          exit 1
+        fi
+        
+        echo "✅ Application built successfully"
+    
+    - name: Build C++ tests
+      run: |
+        cd build
+        # Set environment variables for CMake
+        export LDFLAGS="-L/opt/homebrew/lib -lpthread"
+        export CPPFLAGS="-I/opt/homebrew/include"
+        export PKG_CONFIG_PATH="/opt/homebrew/lib/pkgconfig:$PKG_CONFIG_PATH"
+        
+        echo "Configuring CMake for tests..."
+        cmake .. -DBUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Debug
+        
+        echo "Building tests..."
+        make -j$(sysctl -n hw.ncpu)
+        
+        # Verify test executable was built
+        if [ ! -f "tests/cpp/m8_formatter_tests" ]; then
+          echo "ERROR: Test executable was not built!"
+          echo "CMake configuration:"
+          cat CMakeCache.txt | grep BUILD_TESTS || echo "BUILD_TESTS not found in cache"
+          exit 1
+        fi
+        
+        echo "✅ Test executable built successfully"
+    
+    - name: Run C++ tests (MANDATORY)
+      run: |
+        cd build
+        
+        # Verify test executable exists
+        if [ ! -f "tests/cpp/m8_formatter_tests" ]; then
+          echo "ERROR: C++ test executable not found!"
+          echo "Build directory contents:"
+          ls -la tests/cpp/ || echo "tests/cpp directory not found"
+          echo "Full build directory:"
+          ls -la
+          exit 1
+        fi
+        
+        echo "Running C++ tests..."
+        ./tests/cpp/m8_formatter_tests --gtest_output=xml:test_results.xml
+        
+        # Check if tests passed
+        if [ $? -eq 0 ]; then
+          echo "✅ C++ tests completed successfully"
+        else
+          echo "❌ C++ tests failed"
+          exit 1
+        fi
+    
+    - name: Build Swift package
+      run: |
+        swift build --package-path . -c debug
+    
+    - name: Run Swift tests (MANDATORY)
+      run: |
+        echo "Running Swift tests..."
+        swift test --package-path . -c debug
+        
+        # Check if tests passed
+        if [ $? -eq 0 ]; then
+          echo "✅ Swift tests completed successfully"
+        else
+          echo "❌ Swift tests failed"
+          exit 1
+        fi
+    
+    - name: Run integration tests (MANDATORY)
+      run: |
+        echo "Running integration tests..."
+        
+        # Test the complete application
+        echo "Testing basic functionality..."
+        ./build/M8SampleFormatter tests/fixtures/input tests/fixtures/output
+        
+        if [ $? -ne 0 ]; then
+          echo "❌ Basic integration test failed"
+          exit 1
+        fi
+        
+        # Test with different options
+        echo "Testing --no-bitdepth option..."
+        ./build/M8SampleFormatter tests/fixtures/input tests/fixtures/output --no-bitdepth
+        
+        if [ $? -ne 0 ]; then
+          echo "❌ --no-bitdepth test failed"
+          exit 1
+        fi
+        
+        echo "Testing --flatten-folders option..."
+        ./build/M8SampleFormatter tests/fixtures/input tests/fixtures/output --flatten-folders
+        
+        if [ $? -ne 0 ]; then
+          echo "❌ --flatten-folders test failed"
+          exit 1
+        fi
+        
+        echo "✅ All integration tests passed"
+    
+    - name: Test GUI application
+      run: |
+        # Build and test the GUI
+        swift build --package-path . -c release --product M8FormatterGUI
+        ./scripts/build_app_bundle.sh
+        
+        # Test that the app bundle was created
+        test -f M8SampleFormatter.app/Contents/MacOS/M8SampleFormatter
+    
+    - name: Run performance tests (MANDATORY)
+      run: |
+        echo "Running performance tests..."
+        
+        # Test processing speed
+        echo "Testing processing speed..."
+        time ./build/M8SampleFormatter tests/fixtures/input tests/fixtures/output
+        
+        if [ $? -ne 0 ]; then
+          echo "❌ Performance test failed"
+          exit 1
+        fi
+        
+        # Test memory usage if leaks is available
+        if command -v leaks >/dev/null 2>&1; then
+          echo "Testing memory usage..."
+          leaks --atExit -- ./build/M8SampleFormatter tests/fixtures/input tests/fixtures/output || echo "Memory test completed"
+        else
+          echo "⚠️  leaks command not available, skipping memory test"
+        fi
+        
+        echo "✅ Performance tests completed"
+    
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results
+        path: |
+          build/test_results.xml
+          build/
+    
+    - name: Upload app bundle
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: app-bundle
+        path: M8SampleFormatter.app

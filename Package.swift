@@ -16,7 +16,18 @@ let package = Package(
         .executableTarget(
             name: "M8FormatterGUI",
             dependencies: [],
-            path: "src/swift"
+            path: "src/swift",
+            resources: [
+                .process("M8FormatterGUI/dirtywaveHeader.png")
+            ]
+        ),
+        .testTarget(
+            name: "M8FormatterGUITests",
+            dependencies: ["M8FormatterGUI"],
+            path: "tests/swift",
+            swiftSettings: [
+                .enableExperimentalFeature("StrictConcurrency")
+            ]
         )
     ]
 )
