@@ -1,9 +1,12 @@
-# Global code owners
+# Global code owners - ALL FILES require @rauldtrejo approval
 * @rauldtrejo
 
-# Specific file ownership
+# Critical files that especially need owner review
 /.github/ @rauldtrejo
 /scripts/ @rauldtrejo
 /src/ @rauldtrejo
 CMakeLists.txt @rauldtrejo
 Package.swift @rauldtrejo
+CODEOWNERS @rauldtrejo
+README.md @rauldtrejo
+LICENSE @rauldtrejo
