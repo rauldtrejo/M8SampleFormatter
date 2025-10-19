@@ -5,6 +5,50 @@
 #include <fstream>
 #include <cmath>
 
+// Helper functions for creating test files
+void createTestWavFile(const std::string& filename) {
+    // Create a simple WAV file header and some dummy audio data
+    std::ofstream file(filename, std::ios::binary);
+    
+    // WAV header (44 bytes)
+    file.write("RIFF", 4);
+    uint32_t fileSize = 44 + 1024 - 8; // Header + data - 8
+    file.write(reinterpret_cast<const char*>(&fileSize), 4);
+    file.write("WAVE", 4);
+    file.write("fmt ", 4);
+    uint32_t fmtSize = 16;
+    file.write(reinterpret_cast<const char*>(&fmtSize), 4);
+    uint16_t audioFormat = 1; // PCM
+    file.write(reinterpret_cast<const char*>(&audioFormat), 2);
+    uint16_t numChannels = 1;
+    file.write(reinterpret_cast<const char*>(&numChannels), 2);
+    uint32_t sampleRate = 44100;
+    file.write(reinterpret_cast<const char*>(&sampleRate), 4);
+    uint32_t byteRate = sampleRate * numChannels * 2; // 16-bit
+    file.write(reinterpret_cast<const char*>(&byteRate), 4);
+    uint16_t blockAlign = numChannels * 2;
+    file.write(reinterpret_cast<const char*>(&blockAlign), 2);
+    uint16_t bitsPerSample = 16;
+    file.write(reinterpret_cast<const char*>(&bitsPerSample), 2);
+    file.write("data", 4);
+    uint32_t dataSize = 1024;
+    file.write(reinterpret_cast<const char*>(&dataSize), 4);
+    
+    // Write some dummy audio data
+    for (int i = 0; i < 256; i++) {
+        int16_t sample = static_cast<int16_t>(sin(2.0 * M_PI * 440.0 * i / 44100.0) * 16384);
+        file.write(reinterpret_cast<const char*>(&sample), 2);
+    }
+    
+    file.close();
+}
+
+void createTestTextFile(const std::string& filename) {
+    std::ofstream file(filename);
+    file << "This is not a WAV file";
+    file.close();
+}
+
 class AudioProcessorTest : public ::testing::Test {
 protected:
     void SetUp() override {
@@ -42,6 +86,60 @@ TEST_F(AudioProcessorTest, LoadInvalidFile) {
     bool result = processor->loadAudioFile(invalidFile, audioData, info);
     
     EXPECT_FALSE(result);
+}
+
+TEST_F(AudioProcessorTest, LoadMinimalWavFile) {
+    // Test with a minimal WAV file with some audio data
+    std::string minimalFile = "/tmp/minimal.wav";
+    
+    // Create minimal WAV file with 100 samples (200 bytes of 16-bit data)
+    std::ofstream file(minimalFile, std::ios::binary);
+    
+    // WAV header
+    file.write("RIFF", 4);
+    uint32_t fileSize = 44 + 200 - 8; // Header + data - 8
+    file.write(reinterpret_cast<const char*>(&fileSize), 4);
+    file.write("WAVE", 4);
+    file.write("fmt ", 4);
+    uint32_t fmtSize = 16;
+    file.write(reinterpret_cast<const char*>(&fmtSize), 4);
+    uint16_t audioFormat = 1; // PCM
+    file.write(reinterpret_cast<const char*>(&audioFormat), 2);
+    uint16_t numChannels = 1;
+    file.write(reinterpret_cast<const char*>(&numChannels), 2);
+    uint32_t sampleRate = 44100;
+    file.write(reinterpret_cast<const char*>(&sampleRate), 4);
+    uint32_t byteRate = sampleRate * numChannels * 2; // 16-bit
+    file.write(reinterpret_cast<const char*>(&byteRate), 4);
+    uint16_t blockAlign = numChannels * 2;
+    file.write(reinterpret_cast<const char*>(&blockAlign), 2);
+    uint16_t bitsPerSample = 16;
+    file.write(reinterpret_cast<const char*>(&bitsPerSample), 2);
+    file.write("data", 4);
+    uint32_t dataSize = 200;
+    file.write(reinterpret_cast<const char*>(&dataSize), 4);
+    
+    // Write some minimal audio data (100 samples of silence)
+    for (int i = 0; i < 100; i++) {
+        int16_t sample = 0; // Silence
+        file.write(reinterpret_cast<const char*>(&sample), 2);
+    }
+    
+    file.close();
+    
+    std::vector<float> audioData;
+    AudioInfo info;
+    
+    bool result = processor->loadAudioFile(minimalFile, audioData, info);
+    
+    // Should succeed with some data
+    EXPECT_TRUE(result);
+    EXPECT_EQ(audioData.size(), 100);
+    EXPECT_EQ(info.sampleRate, 44100);
+    EXPECT_EQ(info.channels, 1);
+    
+    // Clean up
+    std::filesystem::remove(minimalFile);
 }
 
 TEST_F(AudioProcessorTest, SaveAudioFile) {
@@ -124,48 +222,10 @@ TEST_F(AudioProcessorTest, IsValidAudioFile) {
 TEST_F(AudioProcessorTest, IsSupportedFormat) {
     EXPECT_TRUE(processor->isSupportedFormat("test.wav"));
     EXPECT_TRUE(processor->isSupportedFormat("test.aiff"));
+    EXPECT_TRUE(processor->isSupportedFormat("test.aif"));
     EXPECT_TRUE(processor->isSupportedFormat("test.flac"));
     EXPECT_TRUE(processor->isSupportedFormat("test.ogg"));
     EXPECT_TRUE(processor->isSupportedFormat("test.mp3"));
     EXPECT_FALSE(processor->isSupportedFormat("test.txt"));
     EXPECT_FALSE(processor->isSupportedFormat("test.unknown"));
 }
-
-private:
-    void createTestWavFile(const std::string& filename) {
-        std::ofstream file(filename, std::ios::binary);
-        if (!file.is_open()) return;
-        
-        // Minimal WAV header
-        file.write("RIFF", 4);
-        int fileSize = 36;
-        file.write(reinterpret_cast<const char*>(&fileSize), 4);
-        file.write("WAVE", 4);
-        file.write("fmt ", 4);
-        int fmtSize = 16;
-        file.write(reinterpret_cast<const char*>(&fmtSize), 4);
-        short audioFormat = 1;
-        file.write(reinterpret_cast<const char*>(&audioFormat), 2);
-        short channels = 1;
-        file.write(reinterpret_cast<const char*>(&channels), 2);
-        int sampleRate = 44100;
-        file.write(reinterpret_cast<const char*>(&sampleRate), 4);
-        int byteRate = 88200;
-        file.write(reinterpret_cast<const char*>(&byteRate), 4);
-        short blockAlign = 2;
-        file.write(reinterpret_cast<const char*>(&blockAlign), 2);
-        short bitDepth = 16;
-        file.write(reinterpret_cast<const char*>(&bitDepth), 2);
-        file.write("data", 4);
-        int dataSize = 0;
-        file.write(reinterpret_cast<const char*>(&dataSize), 4);
-        
-        file.close();
-    }
-    
-    void createTestTextFile(const std::string& filename) {
-        std::ofstream file(filename);
-        file << "This is not an audio file";
-        file.close();
-    }
-};

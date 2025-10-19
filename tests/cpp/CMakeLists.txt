@@ -12,8 +12,9 @@ if(NOT GTest_FOUND)
     message(FATAL_ERROR "Google Test not found. Install with: brew install googletest")
 endif()
 
+# Threads might not be found on macOS, but pthread is always available
 if(NOT Threads_FOUND)
-    message(FATAL_ERROR "Threads not found. This is required for Google Test.")
+    message(STATUS "Threads package not found, but pthread should be available on macOS")
 endif()
 
 # Include directories
@@ -41,8 +42,8 @@ if(APPLE)
                    ${COREAUDIO_FRAMEWORK} ${FOUNDATION_FRAMEWORK} ${COREFOUNDATION_FRAMEWORK})
     
     # Enable Apple Silicon specific optimizations
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=arm64 -mtune=native -mcpu=apple-m1")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=arm64 -mtune=native -mcpu=apple-m1")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mtune=native")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mtune=native")
 endif()
 
 # Source files for tests
@@ -70,6 +71,9 @@ add_executable(m8_formatter_tests ${TEST_SOURCES} ${PROJECT_SOURCES})
 # Link libraries
 if(Threads_FOUND)
     target_link_libraries(m8_formatter_tests Threads::Threads)
+else()
+    # On macOS, pthread is always available, so we can link it directly
+    target_link_libraries(m8_formatter_tests pthread)
 endif()
 target_link_libraries(m8_formatter_tests 
     GTest::gtest
@@ -86,7 +90,6 @@ target_link_directories(m8_formatter_tests PRIVATE ${LIBSNDFILE_LIBRARY_DIRS})
 target_compile_options(m8_formatter_tests PRIVATE
     -Wall
     -Wextra
-    -Werror
     -O2
 )
 

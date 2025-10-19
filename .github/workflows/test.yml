@@ -78,9 +78,9 @@ jobs:
       run: |
         mkdir -p tests/fixtures/input
         mkdir -p tests/fixtures/output
-        # Create simple test files
-        chmod +x tests/fixtures/create_simple_fixtures.sh
-        ./tests/fixtures/create_simple_fixtures.sh
+        # Create minimal audio files for testing
+        chmod +x tests/fixtures/create_minimal_audio_files.sh
+        ./tests/fixtures/create_minimal_audio_files.sh
     
     - name: Configure and build C++ application
       run: |
