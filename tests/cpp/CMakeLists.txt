@@ -2,10 +2,19 @@ cmake_minimum_required(VERSION 3.20)
 
 # Find required packages
 find_package(Threads QUIET)
-find_package(GTest REQUIRED)
+find_package(GTest QUIET)
 find_package(PkgConfig REQUIRED)
 find_library(SNDFILE_LIBRARY NAMES sndfile libsndfile)
 pkg_check_modules(LIBSNDFILE REQUIRED sndfile)
+
+# Only proceed if we have the required dependencies
+if(NOT GTest_FOUND)
+    message(FATAL_ERROR "Google Test not found. Install with: brew install googletest")
+endif()
+
+if(NOT Threads_FOUND)
+    message(FATAL_ERROR "Threads not found. This is required for Google Test.")
+endif()
 
 # Include directories
 include_directories(${LIBSNDFILE_INCLUDE_DIRS})
