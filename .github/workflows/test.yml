@@ -33,7 +33,13 @@ jobs:
         
         # Ensure pthread is available
         echo "Checking pthread availability..."
-        gcc -lpthread -o /tmp/pthread_test -x c - <<< 'int main(){return 0;}' && echo "pthread: OK" || echo "pthread: FAILED"
+        if gcc -lpthread -o /tmp/pthread_test -x c - <<< 'int main(){return 0;}' 2>/dev/null; then
+          echo "pthread: OK"
+          rm -f /tmp/pthread_test
+        else
+          echo "pthread: FAILED"
+          exit 1
+        fi
     
     - name: Verify dependencies
       run: |
@@ -58,8 +64,9 @@ jobs:
         fi
         
         # Check pthread
-        if ld -lpthread -o /tmp/thread_test -x c - <<< 'int main(){return 0;}' 2>/dev/null; then
+        if gcc -lpthread -o /tmp/thread_test -x c - <<< 'int main(){return 0;}' 2>/dev/null; then
           echo "pthread: OK"
+          rm -f /tmp/thread_test
         else
           echo "pthread: MISSING - FAILING BUILD"
           exit 1
