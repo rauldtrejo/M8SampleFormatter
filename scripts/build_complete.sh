@@ -203,6 +203,7 @@ print_success "DMG created successfully!"
 
 # Move to dist folder
 print_status "Moving DMG to dist folder..."
+mkdir -p dist
 mv M8SampleFormatter.dmg dist/
 
 # Create installer script
