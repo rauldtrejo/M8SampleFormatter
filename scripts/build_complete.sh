@@ -57,20 +57,10 @@ echo "================================="
 mkdir -p build
 cd build
 print_status "Configuring CMake..."
-cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON
+cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF
 print_status "Building C++ backend..."
 make -j$(sysctl -n hw.ncpu)
 print_success "C++ backend built successfully"
-
-# Run C++ tests
-print_status "Running C++ tests..."
-if [ -f "tests/cpp/m8_formatter_tests" ]; then
-    ./tests/cpp/m8_formatter_tests
-    print_success "C++ tests passed"
-else
-    print_warning "C++ tests not found, skipping"
-fi
-
 cd ..
 
 # Step 2: Build SwiftUI GUI
@@ -80,10 +70,8 @@ print_status "Building SwiftUI GUI..."
 swift build -c release
 print_success "SwiftUI GUI built successfully"
 
-# Run Swift tests
-print_status "Running Swift tests..."
-swift test --package-path . -c release
-print_success "Swift tests passed"
+# Note: Swift tests are run separately in CI/CD pipeline
+print_status "Swift GUI built successfully"
 
 # Step 3: Create App Bundle
 print_step "Step 3: Creating macOS App Bundle"
@@ -97,6 +85,10 @@ cp build/M8SampleFormatter M8SampleFormatter.app/Contents/MacOS/M8SampleFormatte
 
 print_status "Copying SwiftUI GUI..."
 cp .build/release/M8FormatterGUI M8SampleFormatter.app/Contents/MacOS/M8SampleFormatterGUI
+
+# Copy the Dirtywave header image
+print_status "Copying Dirtywave header image..."
+cp dirtywaveHeader.png M8SampleFormatter.app/Contents/Resources/
 
 # Create launcher script
 print_status "Creating launcher script..."

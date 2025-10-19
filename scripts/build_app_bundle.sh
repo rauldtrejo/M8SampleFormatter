@@ -78,6 +78,10 @@ cd ..
 print_status "Copying SwiftUI GUI..."
 cp M8FormatterGUI/.build/release/M8FormatterGUI M8SampleFormatter.app/Contents/MacOS/M8SampleFormatterGUI
 
+# Copy the Dirtywave header image
+print_status "Copying Dirtywave header image..."
+cp dirtywaveHeader.png M8SampleFormatter.app/Contents/Resources/
+
 # Create a launcher script that runs the SwiftUI app
 print_status "Creating launcher script..."
 cat > M8SampleFormatter.app/Contents/MacOS/M8SampleFormatter << 'EOF'

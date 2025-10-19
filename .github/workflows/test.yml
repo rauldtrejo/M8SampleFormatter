@@ -16,6 +16,9 @@ jobs:
     - name: Install dependencies
       run: |
         brew install cmake pkg-config libsndfile googletest swift
+        # Ensure pthread is available
+        export LDFLAGS="-L/opt/homebrew/lib"
+        export CPPFLAGS="-I/opt/homebrew/include"
     
     - name: Create test fixtures
       run: |

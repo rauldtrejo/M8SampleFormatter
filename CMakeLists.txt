@@ -98,16 +98,17 @@ set_target_properties(M8SampleFormatter PROPERTIES
 # Install target
 install(TARGETS M8SampleFormatter DESTINATION bin)
 
-# Testing
-option(BUILD_TESTS "Build tests" ON)
+# Testing - Disabled by default, only enabled in CI
+option(BUILD_TESTS "Build tests" OFF)
 
 if(BUILD_TESTS)
+    find_package(Threads QUIET)
     find_package(GTest QUIET)
-    if(GTest_FOUND)
+    if(GTest_FOUND AND Threads_FOUND)
         enable_testing()
         add_subdirectory(tests/cpp)
-        message(STATUS "Google Test found, building tests")
+        message(STATUS "Google Test and Threads found, building tests")
     else()
-        message(WARNING "Google Test not found, skipping tests. Install with: brew install googletest")
+        message(WARNING "Google Test or Threads not found, skipping tests. Install with: brew install googletest")
     endif()
 endif()

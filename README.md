@@ -38,6 +38,12 @@ Thank you to the M8 community and the original M8 Sample Organizer team for the 
 - **🖥️ Native macOS UI** - Clean SwiftUI interface
 - **🍎 Apple Silicon Optimized** - Uses Accelerate framework for vectorized operations
 
+## 📸 Screenshot
+
+![M8 Sample Formatter Interface](interface.png)
+
+*Clean, modern interface with Dirtywave branding and intuitive workflow for processing sample packs.*
+
 ---
 
 ## 📥 Installation
