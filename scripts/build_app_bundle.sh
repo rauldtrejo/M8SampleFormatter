@@ -34,31 +34,28 @@ print_error() {
 }
 
 # Check if we're in the right directory
-if [ ! -d "M8SampleFormatter" ] || [ ! -d "M8FormatterGUI" ]; then
-    print_error "Please run this script from the m8FileFormatter root directory"
+if [ ! -d "src/cpp" ] || [ ! -d "src/swift/M8FormatterGUI" ]; then
+    print_error "Please run this script from the M8SampleFormatter root directory"
     exit 1
 fi
 
 # Clean previous builds
 print_status "Cleaning previous builds..."
 rm -rf M8SampleFormatter.app
-rm -rf M8FormatterGUI/.build
+rm -rf .build
 rm -rf build
 
 # Build the C++ backend
 print_status "Building C++ backend..."
-cd M8SampleFormatter
 mkdir -p build
 cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release
-make -j$(nproc)
-cd ../..
+make -j$(sysctl -n hw.ncpu)
+cd ..
 
 # Build the SwiftUI GUI
 print_status "Building SwiftUI GUI..."
-cd M8FormatterGUI
 swift build -c release
-cd ..
 
 # Create app bundle structure
 print_status "Creating app bundle structure..."
@@ -66,17 +63,15 @@ mkdir -p M8SampleFormatter.app/Contents/{MacOS,Resources,Frameworks}
 
 # Copy the C++ executable
 print_status "Copying C++ backend..."
-cp M8SampleFormatter/build/M8SampleFormatter M8SampleFormatter.app/Contents/MacOS/
+cp build/M8SampleFormatter M8SampleFormatter.app/Contents/MacOS/
 
 # Build the SwiftUI app as a standalone executable
 print_status "Building SwiftUI app as standalone executable..."
-cd M8FormatterGUI
 swift build -c release --static-swift-stdlib
-cd ..
 
 # Copy the SwiftUI executable
 print_status "Copying SwiftUI GUI..."
-cp M8FormatterGUI/.build/release/M8FormatterGUI M8SampleFormatter.app/Contents/MacOS/M8SampleFormatterGUI
+cp .build/release/M8FormatterGUI M8SampleFormatter.app/Contents/MacOS/M8SampleFormatterGUI
 
 # Copy the Dirtywave header image
 print_status "Copying Dirtywave header image..."
