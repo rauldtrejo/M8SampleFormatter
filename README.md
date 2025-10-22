@@ -1,29 +1,12 @@
 # 🎵 M8 Sample Formatter
 
-**Fast, simple audio sample pack formatter for the Dirtywave M8 tracker.**
+**Fast audio sample pack formatter for the Dirtywave M8 tracker.**
 
 [![macOS](https://img.shields.io/badge/macOS-11.0+-blue.svg)](https://www.apple.com/macos/)
 [![Apple Silicon](https://img.shields.io/badge/Apple%20Silicon-Optimized-green.svg)](https://www.apple.com/mac/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-M8 Sample Formatter converts and organizes audio sample packs for the Dirtywave M8 tracker by shortening filenames to camelCase and converting all audio formats to 16-bit WAV.
-
-## 🙏 Acknowledgments
-
-This project was inspired by and builds upon the excellent work of the [M8 Sample Organizer](https://github.com/birds-inc/m8-sample-organizer) by [birds-inc](https://github.com/birds-inc). 
-
-We extend our gratitude to the original developers for:
-- **Folder flattening algorithm** - The core logic for reducing nested folder structures
-- **Strike word removal** - The intelligent approach to removing redundant words
-- **M8 optimization concepts** - Understanding the specific needs of M8 tracker users
-
-Our implementation adds:
-- **Native macOS GUI** - SwiftUI interface for better user experience
-- **Apple Silicon optimization** - High-performance processing using Accelerate framework
-- **Multi-threading** - Parallel processing for faster conversion
-- **Real-time progress tracking** - Live updates during processing
-
-Thank you to the M8 community and the original M8 Sample Organizer team for the inspiration and foundation! 🎵
+Intelligently shortens filenames, removes redundant words, and converts audio formats to M8-ready 16-bit WAV files. Inspired by [M8 Sample Organizer](https://github.com/birds-inc/m8-sample-organizer) with native macOS GUI and Apple Silicon optimization.
 
 ---
 
@@ -49,6 +32,25 @@ Thank you to the M8 community and the original M8 Sample Organizer team for the 
 ![M8 Sample Formatter Interface](interface.png)
 
 *Clean, modern interface with Dirtywave branding and intuitive workflow for processing sample packs.*
+
+---
+
+## 🙏 Acknowledgments
+
+This project was inspired by and builds upon the excellent work of the [M8 Sample Organizer](https://github.com/birds-inc/m8-sample-organizer) by [birds-inc](https://github.com/birds-inc). 
+
+We extend our gratitude to the original developers for:
+- **Folder flattening algorithm** - The core logic for reducing nested folder structures
+- **Strike word removal** - The intelligent approach to removing redundant words
+- **M8 optimization concepts** - Understanding the specific needs of M8 tracker users
+
+Our implementation adds:
+- **Native macOS GUI** - SwiftUI interface for better user experience
+- **Apple Silicon optimization** - High-performance processing using Accelerate framework
+- **Multi-threading** - Parallel processing for faster conversion
+- **Real-time progress tracking** - Live updates during processing
+
+Thank you to the M8 community and the original M8 Sample Organizer team for the inspiration and foundation! 🎵
 
 ---
 
@@ -82,49 +84,46 @@ See [Building from Source](#-building-from-source) below.
 
 ### Input
 ```
-KSHMR Presents Zafrir_s World Sounds Vol. 1/
-├── Drum Fills/
-│   └── KSHMR Zafrir - Drum Fill 01 (125, Cm).wav
-├── Vocals/
-│   └── Loops - Solo/
-│       └── KSHMR Zafrir - Vocal Loop 01 (130, F#m).aiff
-└── Strings/
-    └── KSHMR Zafrir - Pizz Strings 01 (80, F#m).flac
+Ghosthack - Ultimate Techno Bundle 2025/
+├── Ghosthack - EDM Sound Effects/
+│   ├── Miscellaneous/
+│   │   └── Ghosthack-ESE_Misc_Kick_Ultimate.wav
+│   └── Reverses/
+│       └── ESE-Reverse-Breath.wav
+└── Ghosthack - Drum Hero 4/
+    └── Loops/
+        └── DH4-Drum-Loop-Techno-155BPM.wav
 ```
 
 ### Output
 ```
-output/
-└── KSHMR-Presents-Zafrir-s-World-Sounds-Vol.-1/
-    ├── Drum-Fills/
-    │   └── Drum-Fill-01-125-Cm.wav
-    ├── Vocals/
-    │   └── Loops-Solo/
-    │       └── Vocal-Loop-01-130-F#m.wav
-    └── Strings/
-        └── Pizz-Strings-01-80-F#m.wav
+Ghosthack-Melodic-Techno/
+├── EDM-Sound-Effects/
+│   ├── Miscellaneous/
+│   │   └── Misc-Kick.wav
+│   └── Reverses/
+│       └── Breath.wav
+└── Drm-Hero-4/
+    └── Lps/
+        └── Lp-155BPM.wav
 ```
 
-### Transformations Applied
+### What Happened
 
-1. **Parent Folder Cleanup**:
-   - `Ghosthack - Ultimate Techno Bundle 2025` → `Ghosthack-Melodic-Techno`
-   - Removes: Years (2020-2029), marketing words, content in () and []
-   
-2. **Folder Name Formatting**:
-   - `Drum Fills` → `Drum-Fills` (hyphenated, preserves casing)
-   - Removes: Duplicates, filler words, acronyms
-   
-3. **Filename Transformations**:
-   - `KSHMR Zafrir - Drum Fill 01.wav` → `Fill-01.wav`
-   - Removes: Pack name (KSHMR, Zafrir), category words (Drum in folder)
-   - Applies: Abbreviations (Drum→Drm, Vocal→Vox)
-   
-4. **Audio Format**: All formats → 16-bit PCM WAV
+**Removed:**
+- Marketing words: `Ultimate`, `Bundle`, `2025`
+- Pack name duplicates: `Ghosthack`, `Techno`
+- Acronyms: `ESE-`, `DH4-`
+- Category words: `Drum` (already in folder), `Loop` (already in folder)
+- Filler words: `Ultimate`
 
-5. **Preserved Elements**: Musical keys (F#m, C#), BPM, meaningful content
+**Abbreviated:**
+- `Drum` → `Drm`, `Loops` → `Lps`
 
-6. **Structure**: Folder hierarchy maintained
+**Preserved:**
+- Musical info: `155BPM`
+- Meaningful content: `Breath`, `Kick`, `Misc`
+- Folder structure and casing
 
 ### Folder Flattening (Optional)
 
@@ -156,223 +155,38 @@ output/
 
 ---
 
-## 🎯 Comprehensive Name Formatting
+## 🎯 Formatting Rules
 
-M8 Sample Formatter applies multiple intelligent formatting strategies to create clean, readable, M8-compatible file names.
+M8 Sample Formatter applies intelligent strategies to create M8-compatible filenames under 128 characters:
 
----
+### Processing Order:
 
-### 1️⃣ Parent Folder Cleanup
+1. **Parent folder cleanup** - Remove years (2020-2029), marketing words (`Ultimate`, `Bundle`, `Essentials`), content in `()` and `[]`
+2. **Pack name removal** - Fuzzy matching removes pack name from all subfolders/filenames
+3. **Acronym removal** - Remove 2-4 letter prefixes (`ESE-`, `DH4-`, `NRE-`, etc.)
+4. **Category word removal** - Remove words already in folder path (`Kick` removed from `Kick-01.wav` if in `Kicks/` folder)
+5. **Abbreviations** - Always applied (`Drum→Drm`, `Vocal→Vox`, `Loop→Lp`, `Bass→Bs`)
+6. **Truncation** - Last resort if still too long (with warning)
 
-The top-level pack folder name is cleaned before processing:
+### Examples:
 
-#### Removes:
-- **Content in parentheses/brackets**: `(WAV, SERUM) [2024]` → removed entirely
-- **Year numbers**: `2020`, `2021`, `2022`, `2023`, `2024`, `2025`, etc.
-- **Marketing words**: `Ultimate`, `Essentials`, `Bundle`, `Exclusive`, `Collection`, `Series`, `Legends`, `Hero`, `Edition`
-- **Filler words**: `Sample`, `Pack`, `WAV`, `SERUM`
+| Original | Output | What Changed |
+|----------|--------|--------------|
+| `Ghosthack-ESE_Misc_Kick_Ultimate.wav` | `Misc-Kick.wav` | Removed: Ghosthack, ESE, Ultimate |
+| `DH4-Drum-Loop-155BPM.wav` | `Lp-155BPM.wav` | Removed: DH4, Drum (in folder). Abbreviated: Loop→Lp |
+| `KSHMR-Vocal-Loop-130.aiff` | `Vox-Lp-130.wav` | Removed: KSHMR. Abbreviated: Vocal→Vox, Loop→Lp. Converted to WAV |
 
-#### Examples:
-| Original | Cleaned |
-|----------|---------|
-| `Ghosthack - Ultimate Techno Bundle 2025` | `Ghosthack-Melodic-Techno` |
-| `Dropgun Samples - Melodic Techno 2 (WAV, SERUM) [2024]` | `Dropgun-Samples-Melodic-Techno-2` |
-| `Producer Pack Essentials (WAV) 2023` | `Producer` |
 
----
+## 📋 Quick Reference
 
-### 2️⃣ Smart Duplicate Removal (Substring Matching)
+### Common Abbreviations:
+`Drum→Drm`, `Vocal→Vox`, `Loop→Lp`, `Bass→Bs`, `Percussion→Perc`, `Guitar→Gtr`, `String→Str`, `One-Shot→OS`, `Melody→Mel`, `Chord→Chd`
 
-Uses intelligent fuzzy matching to remove duplicate words from filenames.
+### Always Preserved:
+Musical keys (`F#m`, `C#`), BPM (`155BPM`), numbers, original casing, meaningful content
 
-#### How It Works:
-1. **Extract pack name words** from the cleaned folder name
-2. **Fuzzy substring matching** - case-insensitive comparison
-3. **Remove all matches** from subfolders and filenames
-
-#### Examples:
-
-**Pack**: `KSHMR Presents Zafrir World Sounds`
-
-| Original Filename | Output | Removed |
-|-------------------|--------|---------|
-| `KSHMR-Zafrir-Drum-Fill-01.wav` | `Drm-Fill-01.wav` | KSHMR, Zafrir, Drum→Drm |
-| `ghosthack-Techno-Kick.wav` | `Kick.wav` | ghosthack, Techno |
-
-#### Fuzzy Matching Examples:
-
-| Pack Name | Filename | Matches? | Reason |
-|-----------|----------|----------|--------|
-| `KSHMR` | `kshmr_kick.wav` | ✅ Yes | Case-insensitive |
-| `KSHMR` | `K_S_H_M_R_kick.wav` | ✅ Yes | Normalized match |
-| `ghosthack` | `GhostHack-Kick.wav` | ✅ Yes | Case-insensitive substring |
-| `Lo-Fi` | `lofi_beat.wav` | ✅ Yes | Hyphen normalization |
-
----
-
-### 3️⃣ Pack Acronym Removal
-
-Automatically removes 2-4 letter acronyms at the start of filenames.
-
-#### Examples:
-| Original | Output | Acronym Removed |
-|----------|--------|-----------------|
-| `ESE-Reverse-Breath.wav` | `Reverse-Breath.wav` | ESE- |
-| `NRE-Vox-Shot-Drop.wav` | `Vox-Shot-Drop.wav` | NRE- |
-| `HL-Kit-Levels-D#m.wav` | `Kit-Levels-D#m.wav` | HL- |
-| `UE-Clap-Melt.wav` | `Clap-Melt.wav` | UE- |
-| `DH4-Kick-01.wav` | `Kick-01.wav` | DH4- |
-
----
-
-### 4️⃣ Redundant Category Word Removal
-
-If a word appears in the folder path, it's removed from the filename.
-
-#### Examples:
-
-**Folder**: `Drm-Hero-4-OS-Kicks-Acoustic`
-
-| Original Filename | Output | Removed |
-|-------------------|--------|---------|
-| `Kick-01-Hard.wav` | `01-Hard.wav` | Kick (in folder) |
-| `Acoustic-Kick-02.wav` | `02.wav` | Acoustic, Kick |
-
-**Folder**: `EDM-Sound-Effects-Reverses`
-
-| Original Filename | Output | Removed |
-|-------------------|--------|---------|
-| `Reverse-Breath.wav` | `Breath.wav` | Reverse (in folder) |
-| `EDM-Transition.wav` | `Transition.wav` | EDM (in folder) |
-
----
-
-### 5️⃣ Always-On Abbreviations
-
-Common audio terms are abbreviated to save space:
-
-| Full Word | Abbreviation |
-|-----------|--------------|
-| Drum/Drums | Drm/Drms |
-| Vocal/Vocals | Vox |
-| Percussion | Perc |
-| Bass | Bs |
-| Guitar | Gtr |
-| String/Strings | Str/Strs |
-| Synthesizer | Synth |
-| One-Shot/OneShot | OS |
-| Loop/Loops | Lp/Lps |
-| Melody | Mel |
-| Chord/Chords | Chd/Chds |
-| Atmosphere | Atm |
-| Texture | Txt |
-| Instrument | Inst |
-
-#### Example:
-`Vocal-Loop-Bass-Drum.wav` → `Vox-Lp-Bs-Drm.wav`
-
----
-
-## 📏 Path Length Management
-
-M8 tracker has a **128-character filename limit**. M8 Sample Formatter automatically ensures compliance.
-
-### Automatic Strategy:
-
-1. ✅ **Parent folder cleanup** - Remove years, marketing words, parentheses content
-2. ✅ **Duplicate removal** - Remove pack name from filenames
-3. ✅ **Acronym removal** - Remove pack-specific prefixes (ESE-, NRE-, etc.)
-4. ✅ **Category word removal** - Remove words already in folder path
-5. ✅ **Abbreviations** - Always apply (Drum→Drm, Vocal→Vox, etc.)
-6. ⚠️ **Truncation** - Last resort if still too long (with warning logged)
-
-### Result:
-
-**Before**: `Ghosthack-Ultimate-Techno-Bundle-2025/EDM-Sound-Effects-Essentials/Ghosthack-ESE-Drum-Sample-Long-Name-With-Many-Words.wav` (120+ chars)
-
-**After**: `Ghosthack-Melodic-Techno/EDM-Sound-Effects/Long-Name-With-Many-Words.wav` (70 chars)
-
----
-
-## 📊 Complete Real-World Example
-
-### Input:
-```
-Ghosthack - Ultimate Techno Bundle 2025/
-├── Ghosthack - EDM Sound Effects/
-│   ├── Miscellaneous/
-│   │   └── Ghosthack-ESE_Misc_Kick_Ultimate.wav
-│   └── Reverses/
-│       └── ESE-Reverse-Breath.wav
-└── Ghosthack - Drum Hero 4/
-    └── Loops/
-        └── DH4-Drum-Loop-Techno-155BPM.wav
-```
-
-### Output:
-```
-Ghosthack-Melodic-Techno/
-├── EDM-Sound-Effects/
-│   ├── Miscellaneous/
-│   │   └── Misc-Kick.wav
-│   └── Reverses/
-│       └── Breath.wav
-└── Drm-Hero-4/
-    └── Lps/
-        └── Lp-155BPM.wav
-```
-
-### What Was Removed:
-- ✅ Parent folder: `Ultimate`, `Bundle`, `2025`
-- ✅ Subfolders: `Ghosthack` (duplicate), `Drum→Drm`, `Loops→Lps`
-- ✅ Filenames: `Ghosthack`, `ESE`, `DH4` (acronyms), category words, duplicates
-- ✅ Filler words: `Ultimate`, `Techno` (from folder)
-- ✅ Applied abbreviations throughout
-
-### What Was Preserved:
-- ✅ Musical information: `155BPM`
-- ✅ Meaningful content: `Breath`, `Kick`, `Misc`
-- ✅ Folder hierarchy
-- ✅ Original casing
-
----
-
-## 📋 Quick Reference: All Formatting Rules
-
-### 🧹 Removed Automatically:
-
-| Category | Examples |
-|----------|----------|
-| **Marketing Words** | Ultimate, Essentials, Bundle, Exclusive, Collection, Series, Legends, Hero, Edition |
-| **Filler Words** | Sample, Pack, Label, Process, Edit, Final, Version, Copy, Backup |
-| **Years** | 2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029 |
-| **Audio Formats** | WAV, SERUM, Splice, CPA |
-| **Parentheses/Brackets** | Everything inside `()` and `[]` removed from parent folder |
-| **Pack Acronyms** | ESE-, NRE-, HL-, UE-, DH4- (2-4 letter prefixes) |
-| **Duplicate Words** | Pack name words removed from subfolders/filenames |
-| **Category Words** | Words in folder path removed from filenames |
-
-### ✏️ Always Abbreviated:
-
-| Original | Short | Original | Short |
-|----------|-------|----------|-------|
-| Drum/Drums | Drm/Drms | Vocal/Vocals | Vox |
-| Percussion | Perc | Bass | Bs |
-| Guitar | Gtr | String/Strings | Str/Strs |
-| Synthesizer | Synth | One-Shot | OS |
-| Loop/Loops | Lp/Lps | Melody | Mel |
-| Chord/Chords | Chd/Chds | Atmosphere | Atm |
-| Texture | Txt | Instrument | Inst |
-| Sample/Samples | Smp/Smps | | |
-
-### ✅ Always Preserved:
-
-- Musical keys: `F#m`, `C#`, `Db`, `G#`
-- BPM: `120BPM`, `155BPM`
-- Numbers: `01`, `02`, `03`
-- Original casing: `KSHMR`, `LoFi`, `MySound`
-- Meaningful content words
-- Folder hierarchy
+### Always Removed:
+Marketing words, years (2020-2029), pack name duplicates, acronyms (ESE-, DH4-), category words in folder path, content in `()` and `[]`
 
 ---
 
@@ -482,126 +296,22 @@ M8SampleFormatter_Complete/
 └── README.md                  # This file
 ```
 
----
 
-## 🙏 Acknowledgments
+## 🔧 Technical Details
 
-This project was inspired by and builds upon the excellent work of the [M8 Sample Organizer](https://github.com/birds-inc/m8-sample-organizer) by [birds-inc](https://github.com/birds-inc). 
-
-We extend our gratitude to the original developers for:
-- **Folder flattening algorithm** - The core logic for reducing nested folder structures
-- **Strike word removal** - The intelligent approach to removing redundant words
-- **M8 optimization concepts** - Understanding the specific needs of M8 tracker users
-
-Our implementation adds:
-- **Native macOS GUI** - SwiftUI interface for better user experience
-- **Apple Silicon optimization** - High-performance processing using Accelerate framework
-- **Multi-threading** - Parallel processing for faster conversion
-- **Real-time progress tracking** - Live updates during processing
-
-Thank you to the M8 community and the original M8 Sample Organizer team for the inspiration and foundation! 🎵
-
----
-
-## 🔧 Development
-
-### Requirements
-
-- **C++17** compiler (Clang recommended)
-- **Swift 5.5+**
-- **macOS SDK 11.0+**
-
-### Technologies Used
-
-#### Backend
-- **C++17**: High-performance processing
-- **libsndfile**: Audio file I/O (WAV, AIFF, FLAC, OGG, MP3)
-- **Apple Accelerate**: Vectorized audio operations
-- **std::thread**: Multi-threaded file processing
-
-#### Frontend
-- **SwiftUI**: Native macOS UI
-- **AppKit**: File pickers and native dialogs
-- **Combine**: Reactive state management
-
-### Running Tests
-
-```bash
-# Test C++ backend directly
-./build/M8SampleFormatter /path/to/source /path/to/output
-
-# Test with options
-./build/M8SampleFormatter /path/to/source /path/to/output --no-bitdepth
-./build/M8SampleFormatter /path/to/source /path/to/output --flatten-folders
-```
-
-### Debugging
-
-```bash
-# Build with debug symbols
-cd build
-cmake -DCMAKE_BUILD_TYPE=Debug ..
-make -j$(sysctl -n hw.ncpu)
-
-# Run with lldb
-lldb ./M8SampleFormatter
-```
+**Tech Stack:** C++17, libsndfile, Apple Accelerate, SwiftUI, AppKit  
+**Performance:** ~250 files/second on M1 MacBook Pro  
+**Optimizations:** Multi-threading (2x CPU cores), vectorized operations, native ARM64
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details on how to contribute to this project.
+Contributions welcome! See [Contributing Guidelines](CONTRIBUTING.md) for details.
+
+Report issues: https://github.com/rauldtrejo/M8SampleFormatter/issues
 
 ---
 
-## 📊 Performance
-
-### Benchmarks (M1 MacBook Pro)
-
-| Files | Time | Speed |
-|-------|------|-------|
-| 262 | 1.0s | 262 files/s |
-| 1,000 | 4.2s | 238 files/s |
-| 10,000 | 42s | 238 files/s |
-
-### Optimizations
-
-- **Multi-threading**: Uses all CPU cores (2x hardware concurrency)
-- **Vectorized operations**: Apple Accelerate framework
-- **Streaming I/O**: Memory-efficient file processing
-- **Native ARM64**: Compiled for Apple Silicon
-
----
-
-## 🐛 Known Issues
-
-- None currently! 🎉
-
-Report issues at: https://github.com/rauldtrejo/M8SampleFormatter/issues
-
----
-
-
----
-
-## 📧 Contact
-
-- **Issues**: [GitHub Issues](https://github.com/rauldtrejo/M8SampleFormatter/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/rauldtrejo/M8SampleFormatter/discussions)
-
----
-
-## ⭐ Show Your Support
-
-If you find this project useful, please consider:
-- ⭐ Starring the repository
-- 🐛 Reporting bugs
-- 💡 Suggesting features
-- 🤝 Contributing code
-- 📢 Sharing with the M8 community
-
----
-
-**Made with ❤️ for the M8 community**
+**Made with ❤️ for the M8 community** | [Star on GitHub ⭐](https://github.com/rauldtrejo/M8SampleFormatter)
 
