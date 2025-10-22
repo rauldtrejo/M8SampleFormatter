@@ -30,7 +30,13 @@ Thank you to the M8 community and the original M8 Sample Organizer team for the 
 ## ✨ Features
 
 - **📁 Multi-Folder Selection** - Process multiple sample packs at once
-- **✂️ Filename Shortening** - Converts spaces, hyphens, underscores to camelCase
+- **✂️ Intelligent Name Shortening** - Hyphenated format preserves casing for M8 readability
+- **🔄 Smart Duplicate Removal** - Fuzzy substring matching removes pack name duplicates
+- **🏷️ Acronym Removal** - Automatically removes pack-specific prefixes (ESE-, NRE-, HL-, etc.)
+- **🎯 Redundant Category Removal** - Removes category words already in folder path
+- **🧹 Filler Word Cleanup** - Removes marketing words, years, WAV, SERUM, and more
+- **📏 Path Length Management** - Keeps filenames under M8's 128-character limit
+- **⚡ Always-On Abbreviations** - Drum→Drm, Vocal→Vox, Bass→Bs, etc.
 - **🎵 Format Conversion** - Converts WAV, AIFF, FLAC, OGG, MP3 to 16-bit WAV
 - **📂 Structure Preservation** - Maintains your folder organization
 - **🗂️ Folder Flattening** - Optional folder structure flattening (inspired by M8 Sample Organizer)
@@ -89,23 +95,36 @@ KSHMR Presents Zafrir_s World Sounds Vol. 1/
 ### Output
 ```
 output/
-└── kSHMRPresentsZafrirSWorldSoundsVol.1/
-    ├── drumFills/
-    │   └── kSHMRZafrirDrumFill01125Cm.wav
-    ├── vocals/
-    │   └── loopsSolo/
-    │       └── kSHMRZafrirVocalLoop01130F#m.wav
-    └── strings/
-        └── kSHMRZafrirPizzStrings0180F#m.wav
+└── KSHMR-Presents-Zafrir-s-World-Sounds-Vol.-1/
+    ├── Drum-Fills/
+    │   └── Drum-Fill-01-125-Cm.wav
+    ├── Vocals/
+    │   └── Loops-Solo/
+    │       └── Vocal-Loop-01-130-F#m.wav
+    └── Strings/
+        └── Pizz-Strings-01-80-F#m.wav
 ```
 
 ### Transformations Applied
 
-- **Folders**: `Drum Fills` → `drumFills`
-- **Filenames**: `KSHMR Zafrir - Drum Fill 01.wav` → `kSHMRZafrirDrumFill01.wav`
-- **Format**: All audio → 16-bit PCM WAV
-- **Musical Keys**: `F#m`, `C#` preserved
-- **Structure**: Folder hierarchy maintained
+1. **Parent Folder Cleanup**:
+   - `Ghosthack - Ultimate Techno Bundle 2025` → `Ghosthack-Melodic-Techno`
+   - Removes: Years (2020-2029), marketing words, content in () and []
+   
+2. **Folder Name Formatting**:
+   - `Drum Fills` → `Drum-Fills` (hyphenated, preserves casing)
+   - Removes: Duplicates, filler words, acronyms
+   
+3. **Filename Transformations**:
+   - `KSHMR Zafrir - Drum Fill 01.wav` → `Fill-01.wav`
+   - Removes: Pack name (KSHMR, Zafrir), category words (Drum in folder)
+   - Applies: Abbreviations (Drum→Drm, Vocal→Vox)
+   
+4. **Audio Format**: All formats → 16-bit PCM WAV
+
+5. **Preserved Elements**: Musical keys (F#m, C#), BPM, meaningful content
+
+6. **Structure**: Folder hierarchy maintained
 
 ### Folder Flattening (Optional)
 
@@ -134,6 +153,226 @@ output/
 - **Duplicate Word Removal** - Removes redundant words like "processed", "final", "version"
 - **Filler Word Cleanup** - Removes common filler words like "sample", "sound", "audio"
 - **M8-Friendly** - Easier to navigate on the M8 tracker's limited screen
+
+---
+
+## 🎯 Comprehensive Name Formatting
+
+M8 Sample Formatter applies multiple intelligent formatting strategies to create clean, readable, M8-compatible file names.
+
+---
+
+### 1️⃣ Parent Folder Cleanup
+
+The top-level pack folder name is cleaned before processing:
+
+#### Removes:
+- **Content in parentheses/brackets**: `(WAV, SERUM) [2024]` → removed entirely
+- **Year numbers**: `2020`, `2021`, `2022`, `2023`, `2024`, `2025`, etc.
+- **Marketing words**: `Ultimate`, `Essentials`, `Bundle`, `Exclusive`, `Collection`, `Series`, `Legends`, `Hero`, `Edition`
+- **Filler words**: `Sample`, `Pack`, `WAV`, `SERUM`
+
+#### Examples:
+| Original | Cleaned |
+|----------|---------|
+| `Ghosthack - Ultimate Techno Bundle 2025` | `Ghosthack-Melodic-Techno` |
+| `Dropgun Samples - Melodic Techno 2 (WAV, SERUM) [2024]` | `Dropgun-Samples-Melodic-Techno-2` |
+| `Producer Pack Essentials (WAV) 2023` | `Producer` |
+
+---
+
+### 2️⃣ Smart Duplicate Removal (Substring Matching)
+
+Uses intelligent fuzzy matching to remove duplicate words from filenames.
+
+#### How It Works:
+1. **Extract pack name words** from the cleaned folder name
+2. **Fuzzy substring matching** - case-insensitive comparison
+3. **Remove all matches** from subfolders and filenames
+
+#### Examples:
+
+**Pack**: `KSHMR Presents Zafrir World Sounds`
+
+| Original Filename | Output | Removed |
+|-------------------|--------|---------|
+| `KSHMR-Zafrir-Drum-Fill-01.wav` | `Drm-Fill-01.wav` | KSHMR, Zafrir, Drum→Drm |
+| `ghosthack-Techno-Kick.wav` | `Kick.wav` | ghosthack, Techno |
+
+#### Fuzzy Matching Examples:
+
+| Pack Name | Filename | Matches? | Reason |
+|-----------|----------|----------|--------|
+| `KSHMR` | `kshmr_kick.wav` | ✅ Yes | Case-insensitive |
+| `KSHMR` | `K_S_H_M_R_kick.wav` | ✅ Yes | Normalized match |
+| `ghosthack` | `GhostHack-Kick.wav` | ✅ Yes | Case-insensitive substring |
+| `Lo-Fi` | `lofi_beat.wav` | ✅ Yes | Hyphen normalization |
+
+---
+
+### 3️⃣ Pack Acronym Removal
+
+Automatically removes 2-4 letter acronyms at the start of filenames.
+
+#### Examples:
+| Original | Output | Acronym Removed |
+|----------|--------|-----------------|
+| `ESE-Reverse-Breath.wav` | `Reverse-Breath.wav` | ESE- |
+| `NRE-Vox-Shot-Drop.wav` | `Vox-Shot-Drop.wav` | NRE- |
+| `HL-Kit-Levels-D#m.wav` | `Kit-Levels-D#m.wav` | HL- |
+| `UE-Clap-Melt.wav` | `Clap-Melt.wav` | UE- |
+| `DH4-Kick-01.wav` | `Kick-01.wav` | DH4- |
+
+---
+
+### 4️⃣ Redundant Category Word Removal
+
+If a word appears in the folder path, it's removed from the filename.
+
+#### Examples:
+
+**Folder**: `Drm-Hero-4-OS-Kicks-Acoustic`
+
+| Original Filename | Output | Removed |
+|-------------------|--------|---------|
+| `Kick-01-Hard.wav` | `01-Hard.wav` | Kick (in folder) |
+| `Acoustic-Kick-02.wav` | `02.wav` | Acoustic, Kick |
+
+**Folder**: `EDM-Sound-Effects-Reverses`
+
+| Original Filename | Output | Removed |
+|-------------------|--------|---------|
+| `Reverse-Breath.wav` | `Breath.wav` | Reverse (in folder) |
+| `EDM-Transition.wav` | `Transition.wav` | EDM (in folder) |
+
+---
+
+### 5️⃣ Always-On Abbreviations
+
+Common audio terms are abbreviated to save space:
+
+| Full Word | Abbreviation |
+|-----------|--------------|
+| Drum/Drums | Drm/Drms |
+| Vocal/Vocals | Vox |
+| Percussion | Perc |
+| Bass | Bs |
+| Guitar | Gtr |
+| String/Strings | Str/Strs |
+| Synthesizer | Synth |
+| One-Shot/OneShot | OS |
+| Loop/Loops | Lp/Lps |
+| Melody | Mel |
+| Chord/Chords | Chd/Chds |
+| Atmosphere | Atm |
+| Texture | Txt |
+| Instrument | Inst |
+
+#### Example:
+`Vocal-Loop-Bass-Drum.wav` → `Vox-Lp-Bs-Drm.wav`
+
+---
+
+## 📏 Path Length Management
+
+M8 tracker has a **128-character filename limit**. M8 Sample Formatter automatically ensures compliance.
+
+### Automatic Strategy:
+
+1. ✅ **Parent folder cleanup** - Remove years, marketing words, parentheses content
+2. ✅ **Duplicate removal** - Remove pack name from filenames
+3. ✅ **Acronym removal** - Remove pack-specific prefixes (ESE-, NRE-, etc.)
+4. ✅ **Category word removal** - Remove words already in folder path
+5. ✅ **Abbreviations** - Always apply (Drum→Drm, Vocal→Vox, etc.)
+6. ⚠️ **Truncation** - Last resort if still too long (with warning logged)
+
+### Result:
+
+**Before**: `Ghosthack-Ultimate-Techno-Bundle-2025/EDM-Sound-Effects-Essentials/Ghosthack-ESE-Drum-Sample-Long-Name-With-Many-Words.wav` (120+ chars)
+
+**After**: `Ghosthack-Melodic-Techno/EDM-Sound-Effects/Long-Name-With-Many-Words.wav` (70 chars)
+
+---
+
+## 📊 Complete Real-World Example
+
+### Input:
+```
+Ghosthack - Ultimate Techno Bundle 2025/
+├── Ghosthack - EDM Sound Effects/
+│   ├── Miscellaneous/
+│   │   └── Ghosthack-ESE_Misc_Kick_Ultimate.wav
+│   └── Reverses/
+│       └── ESE-Reverse-Breath.wav
+└── Ghosthack - Drum Hero 4/
+    └── Loops/
+        └── DH4-Drum-Loop-Techno-155BPM.wav
+```
+
+### Output:
+```
+Ghosthack-Melodic-Techno/
+├── EDM-Sound-Effects/
+│   ├── Miscellaneous/
+│   │   └── Misc-Kick.wav
+│   └── Reverses/
+│       └── Breath.wav
+└── Drm-Hero-4/
+    └── Lps/
+        └── Lp-155BPM.wav
+```
+
+### What Was Removed:
+- ✅ Parent folder: `Ultimate`, `Bundle`, `2025`
+- ✅ Subfolders: `Ghosthack` (duplicate), `Drum→Drm`, `Loops→Lps`
+- ✅ Filenames: `Ghosthack`, `ESE`, `DH4` (acronyms), category words, duplicates
+- ✅ Filler words: `Ultimate`, `Techno` (from folder)
+- ✅ Applied abbreviations throughout
+
+### What Was Preserved:
+- ✅ Musical information: `155BPM`
+- ✅ Meaningful content: `Breath`, `Kick`, `Misc`
+- ✅ Folder hierarchy
+- ✅ Original casing
+
+---
+
+## 📋 Quick Reference: All Formatting Rules
+
+### 🧹 Removed Automatically:
+
+| Category | Examples |
+|----------|----------|
+| **Marketing Words** | Ultimate, Essentials, Bundle, Exclusive, Collection, Series, Legends, Hero, Edition |
+| **Filler Words** | Sample, Pack, Label, Process, Edit, Final, Version, Copy, Backup |
+| **Years** | 2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029 |
+| **Audio Formats** | WAV, SERUM, Splice, CPA |
+| **Parentheses/Brackets** | Everything inside `()` and `[]` removed from parent folder |
+| **Pack Acronyms** | ESE-, NRE-, HL-, UE-, DH4- (2-4 letter prefixes) |
+| **Duplicate Words** | Pack name words removed from subfolders/filenames |
+| **Category Words** | Words in folder path removed from filenames |
+
+### ✏️ Always Abbreviated:
+
+| Original | Short | Original | Short |
+|----------|-------|----------|-------|
+| Drum/Drums | Drm/Drms | Vocal/Vocals | Vox |
+| Percussion | Perc | Bass | Bs |
+| Guitar | Gtr | String/Strings | Str/Strs |
+| Synthesizer | Synth | One-Shot | OS |
+| Loop/Loops | Lp/Lps | Melody | Mel |
+| Chord/Chords | Chd/Chds | Atmosphere | Atm |
+| Texture | Txt | Instrument | Inst |
+| Sample/Samples | Smp/Smps | | |
+
+### ✅ Always Preserved:
+
+- Musical keys: `F#m`, `C#`, `Db`, `G#`
+- BPM: `120BPM`, `155BPM`
+- Numbers: `01`, `02`, `03`
+- Original casing: `KSHMR`, `LoFi`, `MySound`
+- Meaningful content words
+- Folder hierarchy
 
 ---
 
